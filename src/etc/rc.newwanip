@@ -84,6 +84,7 @@ system_hosts_generate();
 $cacheip = trim(@file_get_contents($cacheip_file));
 if ($ip == $cacheip) {
     log_msg("No IP change detected for {$interface_descr}[{$interface}]", LOG_INFO);
+    system_routing_configure(false, $interface); /* XXX workaround for missing default route */
     return;
 }
 

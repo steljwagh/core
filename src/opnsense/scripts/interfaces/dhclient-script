@@ -280,12 +280,18 @@ ARPCHECK|ARPSEND)
 BOUND|RENEW|REBIND|REBOOT)
 	check_hostname
 	changes="no"
+	$LOGGER "DEBUG entering with $reason"
+	$LOGGER "DEBUG old_ip_address: $old_ip_address"
+	$LOGGER "DEBUG new_ip_address: $new_ip_address"
+	$LOGGER "DEBUG alias_ip_address: $alias_ip_address"
 	if [ -n "$old_ip_address" ]; then
 		if [ -n "$alias_ip_address" -a "$old_ip_address" != "$alias_ip_address" ]; then
+			$LOGGER "DEBUG calling delete_old_alias"
 			delete_old_alias
 			changes="yes"
 		fi
 		if [ "$old_ip_address" != "$new_ip_address" ]; then
+			$LOGGER "DEBUG calling delete_old_address/delete_old_routes"
 			delete_old_address
 			delete_old_routes
 			changes="yes"
@@ -295,11 +301,13 @@ BOUND|RENEW|REBIND|REBOOT)
 	   [ "$reason" = REBOOT ] || \
 	   [ -z "$old_ip_address" ] || \
 	   [ "$old_ip_address" != "$new_ip_address" ]; then
+		$LOGGER "DEBUG calling add_new_address/add_new_routes"
 		add_new_address
 		add_new_routes
 		changes="yes"
 	fi
 	if [ -n "$alias_ip_address" -a "$new_ip_address" != "$alias_ip_address" ]; then
+		$LOGGER "DEBUG calling add_new_alias"
 		add_new_alias
 		changes="yes"
 	fi
