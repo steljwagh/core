@@ -2,7 +2,7 @@
 <?php
 
 /*
- * Copyright (C) 2017-2022 Franco Fichtner <franco@opnsense.org>
+ * Copyright (C) 2017-2023 Franco Fichtner <franco@opnsense.org>
  * Copyright (C) 2006 Scott Ullrich <sullrich@gmail.com>
  * Copyright (C) 2003-2005 Manuel Kasper <mk@neon1.net>
  * All rights reserved.
@@ -38,6 +38,7 @@ require_once("system.inc");
 require_once("interfaces.inc");
 
 $argument = isset($argv[1]) ? trim($argv[1]) : '';
+$force = !empty($argv[2]) ? 'yes' : 'no';
 
 exit_on_bootup(function ($argument) {
     log_msg("IP renewal deferred during boot on '{$argument}'");
@@ -82,12 +83,12 @@ system_resolvconf_generate();
 system_hosts_generate();
 
 $cacheip = trim(@file_get_contents($cacheip_file));
-if ($ip == $cacheip) {
+if ($force == 'no' && $ip == $cacheip) {
     log_msg("No IP change detected for {$interface_descr}[{$interface}]", LOG_INFO);
     return;
 }
 
-log_msg("IP renwal starting (new: {$ip}, old: ${cacheip}, interface: {$interface_descr}[{$interface}], device: {$device})");
+log_msg("IP renewal starting (new: {$ip}, old: {$cacheip}, interface: {$interface_descr}[{$interface}], device: {$device}, force: {$force})");
 
 interfaces_vips_configure($interface, 6);
 
